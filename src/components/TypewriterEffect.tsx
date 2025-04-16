@@ -22,14 +22,12 @@ const TypewriterEffect: React.FC<TypewriterEffectProps> = ({
   const [isPaused, setIsPaused] = useState(false);
   const [pauseDuration, setPauseDuration] = useState(0);
 
-  // Reset and start deleting when text changes
+  // Reset typing process when text changes
   useEffect(() => {
-    // If there's existing text, start deleting
     if (displayText.length > 0) {
       setIsDeleting(true);
-      setPauseDuration(2000); // 2-second pause before deleting
+      setPauseDuration(0); // Don't pause before starting to delete
     } else {
-      // If no text, reset and start typing new text
       setCurrentIndex(0);
       setIsDeleting(false);
       setIsPaused(false);
@@ -40,14 +38,20 @@ const TypewriterEffect: React.FC<TypewriterEffectProps> = ({
   useEffect(() => {
     let timer: NodeJS.Timeout;
 
+    // Handle pause after completing text
     if (pauseDuration > 0) {
       timer = setTimeout(() => {
         setPauseDuration(0);
-        setIsPaused(true);
+        setIsPaused(false);
+        
+        if (infinite) {
+          setIsDeleting(true);
+        }
       }, pauseDuration);
       return () => clearTimeout(timer);
     }
 
+    // Handle regular pause between operations
     if (isPaused) {
       timer = setTimeout(() => {
         setIsPaused(false);
@@ -55,6 +59,7 @@ const TypewriterEffect: React.FC<TypewriterEffectProps> = ({
       return () => clearTimeout(timer);
     }
 
+    // Handle text deletion
     if (isDeleting) {
       if (displayText.length === 0) {
         // When text is fully deleted, prepare to type new text
@@ -67,11 +72,12 @@ const TypewriterEffect: React.FC<TypewriterEffectProps> = ({
         setDisplayText(prevText => prevText.slice(0, -1));
       }, speed / 2);
     } else {
+      // Handle text typing
       if (currentIndex >= text.length) {
+        // Text is fully typed, pause before next action
         if (infinite) {
+          setPauseDuration(2000); // 2-second pause after completing the text
           setIsPaused(true);
-          setIsDeleting(true);
-          setPauseDuration(2000); // 2-second pause before deleting
         }
         return;
       }
