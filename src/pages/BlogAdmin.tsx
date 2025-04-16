@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -12,33 +12,52 @@ import {
 } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { useAppSelector, useAppDispatch } from '@/hooks/use-redux';
-import { deletePost } from '@/store/blogSlice';
+import { 
+  deletePost, 
+  fetchBlogsStart, 
+  fetchBlogsSuccess,
+  fetchBlogsFailure
+} from '@/store/blogSlice';
 import { Pencil, Trash, PlusCircle, Eye } from 'lucide-react';
 import { BLOG_POSTS } from '@/data/blogData';
 import BlogEditor from '@/components/BlogEditor';
 
-type BlogPost = {
-  id: string | number;
-  title: string;
-  excerpt: string;
-  date: string;
-  tags: string[];
-};
-
 const BlogAdmin = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   
-  // In a real app, this would come from the Redux store
-  const [posts, setPosts] = useState<BlogPost[]>(BLOG_POSTS);
+  // Get posts from Redux store
+  const { posts, isLoading, error } = useAppSelector(state => state.blog);
   const [isEditing, setIsEditing] = useState(false);
-  const [currentPost, setCurrentPost] = useState<BlogPost | null>(null);
+  const [currentPost, setCurrentPost] = useState<any | null>(null);
+
+  // Check if we were navigated here with a post to edit
+  useEffect(() => {
+    if (location.state?.editPostId) {
+      const postToEdit = posts.find(post => post.id === location.state.editPostId);
+      if (postToEdit) {
+        handleEdit(postToEdit);
+      }
+    }
+  }, [location.state, posts]);
+
+  // Load posts if empty
+  useEffect(() => {
+    if (posts.length === 0 && !isLoading) {
+      dispatch(fetchBlogsStart());
+      try {
+        // In a real app, this would be an API call
+        dispatch(fetchBlogsSuccess(BLOG_POSTS));
+      } catch (error) {
+        dispatch(fetchBlogsFailure('Failed to load blog posts'));
+      }
+    }
+  }, [dispatch, posts.length, isLoading]);
 
   const handleDelete = (id: string | number) => {
     try {
-      // This would dispatch to an API in a real app
-      setPosts(prevPosts => prevPosts.filter(post => post.id !== id));
       dispatch(deletePost(id.toString()));
       
       toast({
@@ -54,7 +73,7 @@ const BlogAdmin = () => {
     }
   };
 
-  const handleEdit = (post: BlogPost) => {
+  const handleEdit = (post: any) => {
     setCurrentPost(post);
     setIsEditing(true);
   };
@@ -71,7 +90,31 @@ const BlogAdmin = () => {
   const handleCloseEditor = () => {
     setIsEditing(false);
     setCurrentPost(null);
+    // Clear the location state
+    navigate(location.pathname, { replace: true, state: {} });
   };
+
+  if (isLoading) {
+    return (
+      <div className="section-padding pt-24">
+        <div className="container mx-auto">
+          <p>Loading blog posts...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="section-padding pt-24">
+        <div className="container mx-auto">
+          <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+            <p className="text-red-600 dark:text-red-400">Error: {error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="section-padding pt-24">
