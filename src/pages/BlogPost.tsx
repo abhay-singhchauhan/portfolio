@@ -1,21 +1,44 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Clock, User, MessageSquare, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useAppSelector } from '@/hooks/use-redux';
+import { useAppSelector, useAppDispatch } from '@/hooks/use-redux';
+import { fetchBlogsStart, fetchBlogsSuccess, fetchBlogsFailure } from '@/store/blogSlice';
 import { BLOG_POSTS } from '@/data/blogData';
 
 const BlogPost = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { isAuthenticated, user } = useAppSelector(state => state.auth);
+  const { posts, isLoading, error } = useAppSelector(state => state.blog);
   const isAdmin = isAuthenticated && user?.isAdmin;
+
+  useEffect(() => {
+    if (posts.length === 0 && !isLoading) {
+      dispatch(fetchBlogsStart());
+      try {
+        dispatch(fetchBlogsSuccess(BLOG_POSTS));
+      } catch (error) {
+        dispatch(fetchBlogsFailure('Failed to load blog posts'));
+      }
+    }
+  }, [dispatch, posts.length, isLoading]);
   
-  // In a real app, we would fetch this from Redux
-  const post = BLOG_POSTS.find(post => post.id === id);
+  const post = posts.find(post => post.id === id);
   
-  if (!post) {
+  if (isLoading) {
+    return (
+      <div className="section-padding pt-24 text-center">
+        <div className="container mx-auto">
+          <p>Loading blog post...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !post) {
     return (
       <div className="section-padding pt-24 text-center">
         <div className="container mx-auto">

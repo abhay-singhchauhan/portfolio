@@ -16,14 +16,12 @@ import {
   deletePost, 
   fetchBlogsStart, 
   fetchBlogsSuccess,
-  fetchBlogsFailure
+  fetchBlogsFailure,
+  BlogPost
 } from '@/store/blogSlice';
 import { Pencil, Trash, PlusCircle, Eye } from 'lucide-react';
 import { BLOG_POSTS } from '@/data/blogData';
 import BlogEditor from '@/components/BlogEditor';
-
-// Define a type that matches the BLOG_POSTS structure
-type BlogPostData = typeof BLOG_POSTS[0];
 
 const BlogAdmin = () => {
   const dispatch = useAppDispatch();
@@ -34,7 +32,7 @@ const BlogAdmin = () => {
   // Get posts from Redux store
   const { posts, isLoading, error } = useAppSelector(state => state.blog);
   const [isEditing, setIsEditing] = useState(false);
-  const [currentPost, setCurrentPost] = useState<BlogPostData | null>(null);
+  const [currentPost, setCurrentPost] = useState<BlogPost | null>(null);
 
   // Check if we were navigated here with a post to edit
   useEffect(() => {
@@ -52,7 +50,7 @@ const BlogAdmin = () => {
       dispatch(fetchBlogsStart());
       try {
         // In a real app, this would be an API call
-        dispatch(fetchBlogsSuccess(BLOG_POSTS as any));
+        dispatch(fetchBlogsSuccess(BLOG_POSTS));
       } catch (error) {
         dispatch(fetchBlogsFailure('Failed to load blog posts'));
       }
@@ -76,7 +74,7 @@ const BlogAdmin = () => {
     }
   };
 
-  const handleEdit = (post: any) => {
+  const handleEdit = (post: BlogPost) => {
     setCurrentPost(post);
     setIsEditing(true);
   };

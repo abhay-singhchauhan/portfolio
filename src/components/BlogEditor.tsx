@@ -6,11 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useAppDispatch } from '@/hooks/use-redux';
-import { createPost, updatePost } from '@/store/blogSlice';
+import { createPost, updatePost, BlogPost } from '@/store/blogSlice';
 import { X, ImagePlus, Save, Tag } from 'lucide-react';
 
 interface BlogEditorProps {
-  post?: any;
+  post?: BlogPost | null;
   onClose: () => void;
 }
 
@@ -19,7 +19,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ post, onClose }) => {
   const { toast } = useToast();
   const isEditMode = !!post;
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<BlogPost>({
     id: '',
     title: '',
     excerpt: '',
@@ -27,7 +27,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ post, onClose }) => {
     date: '',
     readTime: '',
     author: 'Abhay Singh Chauhan',
-    tags: [''] as string[],
+    tags: [''],
     imageSrc: '/placeholder.svg',
   });
 
