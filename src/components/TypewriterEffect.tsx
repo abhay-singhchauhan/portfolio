@@ -12,7 +12,7 @@ interface TypewriterEffectProps {
 const TypewriterEffect: React.FC<TypewriterEffectProps> = ({
   text,
   delay = 200,
-  speed = 30, // Increased speed (lower number means faster typing)
+  speed = 20, // Even faster typing
   infinite = false,
   className = '',
 }) => {
@@ -21,12 +21,17 @@ const TypewriterEffect: React.FC<TypewriterEffectProps> = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Reset text when the input text changes
+  // Reset and start deleting when text changes
   useEffect(() => {
-    setDisplayText('');
-    setCurrentIndex(0);
-    setIsDeleting(false);
-    setIsPaused(false);
+    // If there's existing text, start deleting
+    if (displayText.length > 0) {
+      setIsDeleting(true);
+    } else {
+      // If no text, reset and start typing new text
+      setCurrentIndex(0);
+      setIsDeleting(false);
+      setIsPaused(false);
+    }
   }, [text]);
 
   useEffect(() => {
@@ -41,6 +46,7 @@ const TypewriterEffect: React.FC<TypewriterEffectProps> = ({
 
     if (isDeleting) {
       if (displayText.length === 0) {
+        // When text is fully deleted, prepare to type new text
         setIsDeleting(false);
         setCurrentIndex(0);
         return;
