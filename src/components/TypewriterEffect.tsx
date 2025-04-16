@@ -12,7 +12,7 @@ interface TypewriterEffectProps {
 const TypewriterEffect: React.FC<TypewriterEffectProps> = ({
   text,
   delay = 200,
-  speed = 50,
+  speed = 30, // Increased speed (lower number means faster typing)
   infinite = false,
   className = '',
 }) => {
@@ -20,6 +20,14 @@ const TypewriterEffect: React.FC<TypewriterEffectProps> = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+
+  // Reset text when the input text changes
+  useEffect(() => {
+    setDisplayText('');
+    setCurrentIndex(0);
+    setIsDeleting(false);
+    setIsPaused(false);
+  }, [text]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
