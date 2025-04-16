@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Code, Database, Server } from 'lucide-react';
@@ -51,7 +50,7 @@ const Home = () => {
                 Hi, I'm Abhay 👋
               </p>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mt-4 animate-fade-in animate-delay-200">
-                <AnimatedTitle titles={titles} />
+                I'm a <AnimatedTitle titles={titles} typingSpeed={70} />
               </h1>
               <p className={getTextColorClass("text-lg text-gray-600 dark:text-gray-300 mt-6 animate-fade-in animate-delay-300")}>
                 Building robust technology solutions with <span className="text-portfolio-primary font-medium">Node.js</span>, 

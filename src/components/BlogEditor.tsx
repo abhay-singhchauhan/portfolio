@@ -8,6 +8,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useAppDispatch } from '@/hooks/use-redux';
 import { createPost, updatePost, BlogPost } from '@/store/blogSlice';
 import { X, ImagePlus, Save, Tag } from 'lucide-react';
+import RichTextEditor from './RichTextEditor';
+import TypewriterEffect from './TypewriterEffect';
 
 interface BlogEditorProps {
   post?: BlogPost | null;
@@ -55,6 +57,10 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ post, onClose }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleContentChange = (content: string) => {
+    setFormData(prev => ({ ...prev, content }));
   };
 
   const handleAddTag = () => {
@@ -113,7 +119,13 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ post, onClose }) => {
   return (
     <Card className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">{isEditMode ? 'Edit' : 'Create'} Blog Post</h2>
+        <h2 className="text-2xl font-bold">
+          <TypewriterEffect 
+            text={isEditMode ? 'Edit Blog Post' : 'Create New Blog Post'} 
+            speed={70}
+            className="text-portfolio-primary"
+          />
+        </h2>
         <Button variant="ghost" size="sm" onClick={onClose}>
           <X className="h-5 w-5" />
         </Button>
@@ -153,14 +165,9 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ post, onClose }) => {
             <label className="block text-sm font-medium mb-1" htmlFor="content">
               Content
             </label>
-            <Textarea
-              id="content"
-              name="content"
-              value={formData.content}
-              onChange={handleChange}
-              placeholder="Write your blog post content here..."
-              className="min-h-[300px]"
-              required
+            <RichTextEditor 
+              initialValue={formData.content} 
+              onChange={handleContentChange} 
             />
           </div>
           

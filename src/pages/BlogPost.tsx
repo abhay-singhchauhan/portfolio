@@ -55,6 +55,57 @@ const BlogPost = () => {
   const handleEdit = () => {
     navigate(`/admin/blog`, { state: { editPostId: post.id } });
   };
+
+  // Helper function to convert markdown-like content to HTML
+  const formatContent = (content: string) => {
+    if (!content) return '';
+    
+    let html = content
+      // Convert headers
+      .replace(/^# (.*$)/gm, '<h1 class="text-3xl font-bold mt-8 mb-4">$1</h1>')
+      .replace(/^## (.*$)/gm, '<h2 class="text-2xl font-bold mt-6 mb-3">$1</h2>')
+      .replace(/^### (.*$)/gm, '<h3 class="text-xl font-bold mt-5 mb-2">$1</h3>')
+      .replace(/^#### (.*$)/gm, '<h4 class="text-lg font-bold mt-4 mb-2">$1</h4>')
+      .replace(/^##### (.*$)/gm, '<h5 class="text-base font-bold mt-3 mb-1">$1</h5>')
+      .replace(/^###### (.*$)/gm, '<h6 class="text-sm font-bold mt-3 mb-1">$1</h6>')
+      // Bold
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      // Italic
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      // Links
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-blue-600 hover:underline">$1</a>')
+      // Images
+      .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" class="max-w-full h-auto my-4 rounded-lg shadow-md" />')
+      // Lists
+      .replace(/^- (.*)$/gm, '<li class="ml-6 list-disc">$1</li>')
+      .replace(/^([0-9]+)\. (.*)$/gm, '<li class="ml-6 list-decimal">$2</li>')
+      // Blockquotes
+      .replace(/^> (.*)$/gm, '<blockquote class="border-l-4 border-gray-300 pl-4 py-2 my-4 italic">$1</blockquote>')
+      // Code
+      .replace(/`(.*?)`/g, '<code class="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded font-mono text-sm">$1</code>')
+      // Paragraph
+      .replace(/^(?!<[a-z]).+$/gm, (match) => {
+        if (match.trim() === '') return '';
+        return `<p class="mb-4">${match}</p>`;
+      })
+      // Ensure lists are wrapped in ul tags
+      .replace(/<li class="ml-6 list-disc">(.*?)(?=<\/li>)/g, (match) => {
+        if (match.startsWith('<ul>')) return match;
+        return `<ul class="mb-4">${match}`;
+      })
+      .replace(/<li class="ml-6 list-decimal">(.*?)(?=<\/li>)/g, (match) => {
+        if (match.startsWith('<ol>')) return match;
+        return `<ol class="mb-4">${match}`;
+      })
+      // Underline
+      .replace(/<u>(.*?)<\/u>/g, '<span class="underline">$1</span>');
+    
+    // Wrap lists properly
+    html = html.replace(/<\/li>\s*(?!<\/ul>|<\/ol>|<li)/g, '</li></ul>');
+    html = html.replace(/<\/li>\s*(?!<\/ol>|<\/ul>|<li)/g, '</li></ol>');
+    
+    return html;
+  };
   
   return (
     <div>
@@ -118,7 +169,7 @@ const BlogPost = () => {
             {/* Blog Post Content */}
             <div 
               className="prose prose-lg max-w-none dark:prose-invert"
-              dangerouslySetInnerHTML={{ __html: post.content }}
+              dangerouslySetInnerHTML={{ __html: formatContent(post.content) }}
             />
             
             {/* Comments Section */}
