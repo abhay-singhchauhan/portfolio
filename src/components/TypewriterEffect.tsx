@@ -20,22 +20,33 @@ const TypewriterEffect: React.FC<TypewriterEffectProps> = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [pauseDuration, setPauseDuration] = useState(0);
 
   // Reset and start deleting when text changes
   useEffect(() => {
     // If there's existing text, start deleting
     if (displayText.length > 0) {
       setIsDeleting(true);
+      setPauseDuration(2000); // 2-second pause before deleting
     } else {
       // If no text, reset and start typing new text
       setCurrentIndex(0);
       setIsDeleting(false);
       setIsPaused(false);
+      setPauseDuration(0);
     }
   }, [text]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
+
+    if (pauseDuration > 0) {
+      timer = setTimeout(() => {
+        setPauseDuration(0);
+        setIsPaused(true);
+      }, pauseDuration);
+      return () => clearTimeout(timer);
+    }
 
     if (isPaused) {
       timer = setTimeout(() => {
@@ -60,6 +71,7 @@ const TypewriterEffect: React.FC<TypewriterEffectProps> = ({
         if (infinite) {
           setIsPaused(true);
           setIsDeleting(true);
+          setPauseDuration(2000); // 2-second pause before deleting
         }
         return;
       }
@@ -71,7 +83,7 @@ const TypewriterEffect: React.FC<TypewriterEffectProps> = ({
     }
 
     return () => clearTimeout(timer);
-  }, [currentIndex, delay, displayText, infinite, isDeleting, isPaused, speed, text]);
+  }, [currentIndex, delay, displayText, infinite, isDeleting, isPaused, speed, text, pauseDuration]);
 
   return (
     <span className={`${className} relative`}>
