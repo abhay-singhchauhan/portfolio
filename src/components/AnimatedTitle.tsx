@@ -6,7 +6,7 @@ interface AnimatedTitleProps {
   interval?: number;
 }
 
-const AnimatedTitle: React.FC<AnimatedTitleProps> = ({ titles, interval = 3000 }) => {
+const AnimatedTitle: React.FC<AnimatedTitleProps> = ({ titles, interval = 2500 }) => {
   const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
   const [isChanging, setIsChanging] = useState(false);
 
@@ -18,7 +18,7 @@ const AnimatedTitle: React.FC<AnimatedTitleProps> = ({ titles, interval = 3000 }
       setTimeout(() => {
         setCurrentTitleIndex((prevIndex) => (prevIndex + 1) % titles.length);
         setIsChanging(false);
-      }, 500); // This should match the animation duration
+      }, 300); // Faster transition time (was 500ms)
       
     }, interval);
 
@@ -27,7 +27,11 @@ const AnimatedTitle: React.FC<AnimatedTitleProps> = ({ titles, interval = 3000 }
 
   return (
     <span 
-      className={`transition-opacity duration-500 ${isChanging ? 'opacity-0' : 'opacity-100'}`}
+      className={`transition-all duration-300 font-bold ${
+        isChanging 
+          ? 'opacity-0 transform -translate-y-2' 
+          : 'opacity-100 transform translate-y-0'
+      }`}
     >
       {titles[currentTitleIndex]}
     </span>

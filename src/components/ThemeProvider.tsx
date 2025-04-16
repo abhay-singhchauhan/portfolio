@@ -1,18 +1,19 @@
 
 import React, { createContext, useContext, useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '@/hooks/use-redux';
-import { setDarkMode } from '@/store/themeSlice';
+import { setDarkMode, setTextContrast } from '@/store/themeSlice';
 
 type ThemeContextType = {
   isDarkMode: boolean;
+  textContrast: 'normal' | 'high';
 };
 
-const ThemeContext = createContext<ThemeContextType>({ isDarkMode: false });
+const ThemeContext = createContext<ThemeContextType>({ isDarkMode: false, textContrast: 'normal' });
 
 export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isDarkMode } = useAppSelector(state => state.theme);
+  const { isDarkMode, textContrast } = useAppSelector(state => state.theme);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -20,6 +21,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
       dispatch(setDarkMode(true));
+      // Set high contrast by default for dark mode
+      dispatch(setTextContrast('high'));
     }
   }, [dispatch]);
 
@@ -28,14 +31,24 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
+      
+      // Set high contrast text for dark mode for better visibility
+      if (textContrast !== 'high') {
+        dispatch(setTextContrast('high'));
+      }
     } else {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
+      
+      // Reset to normal contrast for light mode
+      if (textContrast !== 'normal') {
+        dispatch(setTextContrast('normal'));
+      }
     }
-  }, [isDarkMode]);
+  }, [isDarkMode, textContrast, dispatch]);
 
   return (
-    <ThemeContext.Provider value={{ isDarkMode }}>
+    <ThemeContext.Provider value={{ isDarkMode, textContrast }}>
       {children}
     </ThemeContext.Provider>
   );

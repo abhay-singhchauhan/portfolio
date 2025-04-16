@@ -4,9 +4,11 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Code, Database, Server } from 'lucide-react';
 import AnimatedTitle from '@/components/AnimatedTitle';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAppSelector } from '@/hooks/use-redux';
 
 const Home = () => {
   const isMobile = useIsMobile();
+  const { textContrast } = useAppSelector(state => state.theme);
   
   const titles = [
     "Backend Developer",
@@ -14,6 +16,14 @@ const Home = () => {
     "Tech Advisor",
     "Just that one guy who fixes stuff"
   ];
+
+  // Helper function to determine text color class based on contrast setting
+  const getTextColorClass = (defaultClass: string) => {
+    if (textContrast === 'high') {
+      return defaultClass.replace('text-gray-600', 'text-gray-300');
+    }
+    return defaultClass;
+  };
 
   return (
     <div>
@@ -43,7 +53,7 @@ const Home = () => {
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mt-4 animate-fade-in animate-delay-200">
                 <AnimatedTitle titles={titles} />
               </h1>
-              <p className="text-lg text-gray-600 mt-6 animate-fade-in animate-delay-300">
+              <p className={getTextColorClass("text-lg text-gray-600 dark:text-gray-300 mt-6 animate-fade-in animate-delay-300")}>
                 Building robust technology solutions with <span className="text-portfolio-primary font-medium">Node.js</span>, 
                 <span className="text-portfolio-secondary font-medium"> Express</span>, and 
                 <span className="text-portfolio-accent font-medium"> MySQL</span>
@@ -90,6 +100,7 @@ const Home = () => {
               title="Backend Development"
               description="Building robust, scalable and maintainable server-side applications with Node.js and Express."
               delay="100"
+              textContrast={textContrast}
             />
             
             <SpecializationCard 
@@ -97,6 +108,7 @@ const Home = () => {
               title="Database Management"
               description="Designing and optimizing database schemas, writing queries, and managing data with MySQL, PostgreSQL and Firebase."
               delay="200"
+              textContrast={textContrast}
             />
             
             <SpecializationCard 
@@ -104,6 +116,7 @@ const Home = () => {
               title="API Development"
               description="Creating RESTful APIs with clean architecture that enable seamless communication between front-end and back-end."
               delay="300"
+              textContrast={textContrast}
             />
           </div>
         </div>
@@ -133,16 +146,21 @@ interface SpecializationCardProps {
   title: string;
   description: string;
   delay: string;
+  textContrast: 'normal' | 'high';
 }
 
-const SpecializationCard = ({ icon, title, description, delay }: SpecializationCardProps) => {
+const SpecializationCard = ({ icon, title, description, delay, textContrast }: SpecializationCardProps) => {
+  const descriptionClass = textContrast === 'high' 
+    ? "text-gray-600 dark:text-gray-200" 
+    : "text-gray-600 dark:text-gray-300";
+
   return (
     <div className={`card p-8 animate-fade-in animate-delay-${delay} dark:bg-gray-700 dark:text-white transition-colors`}>
       <div className="mb-4">
         {icon}
       </div>
       <h3 className="text-xl font-bold mb-3">{title}</h3>
-      <p className="text-gray-600 dark:text-gray-300">{description}</p>
+      <p className={descriptionClass}>{description}</p>
     </div>
   );
 };
