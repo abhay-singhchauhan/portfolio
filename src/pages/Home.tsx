@@ -2,23 +2,49 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Code, Database, Server } from 'lucide-react';
+import AnimatedTitle from '@/components/AnimatedTitle';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Home = () => {
+  const isMobile = useIsMobile();
+  
+  const titles = [
+    "Backend Developer",
+    "Tech Consultant",
+    "Tech Advisor",
+    "Just that one guy who fixes stuff"
+  ];
+
   return (
     <div>
       {/* Hero Section */}
       <section className="section-padding min-h-[90vh] flex items-center">
         <div className="container mx-auto">
-          <div className="flex flex-col md:flex-row items-center">
+          <div className={`flex flex-col ${isMobile ? 'flex-col' : 'md:flex-row'} items-center`}>
+            {isMobile && (
+              <div className="md:w-1/2 mb-10 flex justify-center animate-fade-in animate-delay-300">
+                <div className="w-64 h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full overflow-hidden bg-gradient-to-r from-portfolio-primary to-portfolio-secondary p-1">
+                  <div className="w-full h-full rounded-full overflow-hidden">
+                    <img 
+                      src="/placeholder.svg" 
+                      alt="Abhay Singh Chauhan" 
+                      className="w-full h-full object-cover"
+                      style={{ objectPosition: "center top" }}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <div className="md:w-1/2 mb-10 md:mb-0">
               <p className="text-portfolio-primary font-medium animate-fade-in animate-delay-100">
                 Hi, I'm Abhay 👋
               </p>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mt-4 animate-fade-in animate-delay-200">
-                Backend Developer
+                <AnimatedTitle titles={titles} />
               </h1>
               <p className="text-lg text-gray-600 mt-6 animate-fade-in animate-delay-300">
-                Building robust server-side applications with <span className="text-portfolio-primary font-medium">Node.js</span>, 
+                Building robust technology solutions with <span className="text-portfolio-primary font-medium">Node.js</span>, 
                 <span className="text-portfolio-secondary font-medium"> Express</span>, and 
                 <span className="text-portfolio-accent font-medium"> MySQL</span>
               </p>
@@ -33,24 +59,26 @@ const Home = () => {
               </div>
             </div>
             
-            <div className="md:w-1/2 flex justify-center animate-fade-in animate-delay-300">
-              <div className="w-64 h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full overflow-hidden bg-gradient-to-r from-portfolio-primary to-portfolio-secondary p-1">
-                <div className="w-full h-full rounded-full overflow-hidden">
-                  <img 
-                    src="/placeholder.svg" 
-                    alt="Abhay Singh Chauhan" 
-                    className="w-full h-full object-cover"
-                    style={{ objectPosition: "center top" }}
-                  />
+            {!isMobile && (
+              <div className="md:w-1/2 flex justify-center animate-fade-in animate-delay-300">
+                <div className="w-64 h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full overflow-hidden bg-gradient-to-r from-portfolio-primary to-portfolio-secondary p-1">
+                  <div className="w-full h-full rounded-full overflow-hidden">
+                    <img 
+                      src="/placeholder.svg" 
+                      alt="Abhay Singh Chauhan" 
+                      className="w-full h-full object-cover"
+                      style={{ objectPosition: "center top" }}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </section>
       
       {/* Specializations */}
-      <section className="bg-gray-50 section-padding">
+      <section className="bg-gray-50 dark:bg-gray-800 section-padding transition-colors">
         <div className="container mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
             What I <span className="text-portfolio-primary">Specialize</span> In
@@ -109,12 +137,12 @@ interface SpecializationCardProps {
 
 const SpecializationCard = ({ icon, title, description, delay }: SpecializationCardProps) => {
   return (
-    <div className={`card p-8 animate-fade-in animate-delay-${delay}`}>
+    <div className={`card p-8 animate-fade-in animate-delay-${delay} dark:bg-gray-700 dark:text-white transition-colors`}>
       <div className="mb-4">
         {icon}
       </div>
       <h3 className="text-xl font-bold mb-3">{title}</h3>
-      <p className="text-gray-600">{description}</p>
+      <p className="text-gray-600 dark:text-gray-300">{description}</p>
     </div>
   );
 };

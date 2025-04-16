@@ -38,13 +38,43 @@
     --radius: 1rem;
   }
 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 187 91% 36.9%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 243 80% 59%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+
   * {
     @apply border-border;
     scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans transition-colors;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -86,14 +116,14 @@
   }
 
   .btn-outline {
-    @apply border-2 border-portfolio-primary text-portfolio-primary font-medium px-6 py-2 rounded-lg hover:bg-portfolio-primary/10 transition-all;
+    @apply border-2 border-portfolio-primary text-portfolio-primary dark:border-portfolio-primary dark:text-portfolio-primary font-medium px-6 py-2 rounded-lg hover:bg-portfolio-primary/10 transition-all;
   }
 
   .card {
-    @apply bg-white rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden;
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden dark:text-white;
   }
 
   .input-field {
-    @apply px-4 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-portfolio-primary/50 focus:border-portfolio-primary;
+    @apply px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-portfolio-primary/50 focus:border-portfolio-primary bg-white dark:bg-gray-700 dark:text-white;
   }
 }
